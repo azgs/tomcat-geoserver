@@ -6,32 +6,32 @@
 
 # Assign variables that will be used for automation
 function configure_variables() {
-    # These variables should be changed
-    CONNECTOR_PORT='undefined'
-    SHUTDOWN_PORT='undefined'
-    GEOSERVER_NAME='undefined'
-    # These variables should not ever change
-    HOME='/home/geoserver/tomcat-cluster'
-    GEOSERVER_PKG='$HOME/geoserver.war'
-    TOMCAT_HOME='$HOME/apache-tomcat-7.0.42'
-    TARGET_THREAD='$HOME/cluster/tomcat-$CONNECTOR_PORT'
-    TARGET_DIR_NAME='tomcat-$CONNECTOR_PORT'
+# These variables should be changed
+CONNECTOR_PORT='undefined'
+SHUTDOWN_PORT='undefined'
+GEOSERVER_NAME='undefined'
+# These variables should not ever change
+HOME='/home/geoserver/tomcat-cluster'
+GEOSERVER_PKG='$HOME/geoserver.war'
+TOMCAT_HOME='$HOME/apache-tomcat-7.0.42'
+TARGET_THREAD='$HOME/cluster/tomcat-$CONNECTOR_PORT'
+TARGET_DIR_NAME='tomcat-$CONNECTOR_PORT'
 }
 
 # Build a directory with appropriate file structure for Tomcat
 function build_directory() {
-    sudo mkdir -p $TARGET_THREAD/conf
-    sudo mkdir -p $TARGET_THREAD/logs
-    sudo mkdir -p $TARGET_THREAD/temp
-    sudo mkdir -p $TARGET_THREAD/webapps
-    sudo mkdir -p $TARGET_THREAD/work
+sudo mkdir -p $TARGET_THREAD/conf
+sudo mkdir -p $TARGET_THREAD/logs
+sudo mkdir -p $TARGET_THREAD/temp
+sudo mkdir -p $TARGET_THREAD/webapps
+sudo mkdir -p $TARGET_THREAD/work
 
-    # Copy web.xml file, we'll have to make a custom server.xml file
-    sudo cp $TOMCAT_HOME/conf/web.xml $TARGET_THREAD/conf
+# Copy web.xml file, we'll have to make a custom server.xml file
+sudo cp $TOMCAT_HOME/conf/web.xml $TARGET_THREAD/conf
 }
 
 function deploy_geoserver() {
-    sudo cp $GEOSERVER_PKG $TARGET_THREAD/webapps/$GEOSERVER_NAME.war
+sudo cp $GEOSERVER_PKG $TARGET_THREAD/webapps/$GEOSERVER_NAME.war
 }
 
 # Build custom server.xml file
@@ -204,13 +204,14 @@ service $TARGET_DIR_NAME start
 
 # Execute the program
 function run() {
-    configure_variables
-    build_directory
-    build_server_xml
-    deploy_geoserver
-    build_upstart_scripts
+configure_variables
+build_directory
+build_server_xml
+deploy_geoserver
+build_upstart_scripts
 }
 
 echo "Beginning installation..."
 run
 echo "Installation is complete.  Have a nice day!"
+exit
