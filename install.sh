@@ -16,6 +16,8 @@ GEOSERVER_PKG=$HOME/geoserver.war
 TOMCAT_HOME=$HOME/apache-tomcat-7.0.42
 TARGET_THREAD=$HOME/cluster/tomcat-$CONNECTOR_PORT
 TARGET_DIR_NAME=tomcat-$CONNECTOR_PORT
+CATALINA_HOME=/home/geoserver/tomcat-cluster/apache-tomcat-7.0.42
+CATALINA_BASE=$TARGET_THREAD
 }
 
 # Build a directory with appropriate file structure for Tomcat
@@ -192,8 +194,8 @@ sudo cat > $HELPERS/$TARGET_DIR_NAME.conf <<EOF
 start on runlevel [2345]
 stop on runlevel [!2345]
 respawn
-env CATALINA_HOME=/home/geoserver/tomcat-cluster/apache-tomcat-7.0.42
-env CATALINA_BASE=/home/geoserver/tomcat-cluster/$TARGET_DIR_NAME
+env CATALINA_HOME=$CATALINA_HOME
+env CATALINA_BASE=$CATALINA_BASE
 env CATALINA_TMPDIR=$CATALINA_BASE/temp
 env JRE_HOME=/usr/lib/jvm/java-6-openjdk/jre
 env CLASSPATH=/home/geoserver/tomcat-cluster/apache-tomcat-7.0.42/bin/bootstrap.jar
