@@ -11,11 +11,11 @@ CONNECTOR_PORT='undefined'
 SHUTDOWN_PORT='undefined'
 GEOSERVER_NAME='undefined'
 # These variables should not ever change
-HOME='/home/geoserver/tomcat-cluster'
-GEOSERVER_PKG='$HOME/geoserver.war'
-TOMCAT_HOME='$HOME/apache-tomcat-7.0.42'
-TARGET_THREAD='$HOME/cluster/tomcat-$CONNECTOR_PORT'
-TARGET_DIR_NAME='tomcat-$CONNECTOR_PORT'
+HOME=/home/geoserver/tomcat-cluster
+GEOSERVER_PKG=$HOME/geoserver.war
+TOMCAT_HOME=$HOME/apache-tomcat-7.0.42
+TARGET_THREAD=$HOME/cluster/tomcat-$CONNECTOR_PORT
+TARGET_DIR_NAME=tomcat-$CONNECTOR_PORT
 }
 
 # Build a directory with appropriate file structure for Tomcat
@@ -25,7 +25,7 @@ sudo mkdir -p $TARGET_THREAD/logs
 sudo mkdir -p $TARGET_THREAD/temp
 sudo mkdir -p $TARGET_THREAD/webapps
 sudo mkdir -p $TARGET_THREAD/work
-
+sudo mkdir -p $TARGET_THREAD/helper_scripts
 # Copy web.xml file, we'll have to make a custom server.xml file
 sudo cp $TOMCAT_HOME/conf/web.xml $TARGET_THREAD/conf
 }
@@ -37,7 +37,7 @@ sudo cp $GEOSERVER_PKG $TARGET_THREAD/webapps/$GEOSERVER_NAME.war
 # Build custom server.xml file
 function build_server_xml() {
 CONF_DIR=$TARGET_THREAD/conf
-cat > $CONF_DIR/server.xml <<EOF
+sudo cat > $CONF_DIR/server.xml <<EOF
 <?xml version='1.0' encoding='utf-8'?>
 <!--
   Licensed to the Apache Software Foundation (ASF) under one or more
@@ -181,12 +181,13 @@ cat > $CONF_DIR/server.xml <<EOF
   </Service>
 </Server>
 EOF
+}
 
 # Build upstart scripts
 function build_upstart_scripts() {
-UPSTART_DIR='etc/init'
+HELPERS=$TARGET_THREAD/helper_scripts
 # Upstart job for running Tomcat thread
-cat > $UPSTART_DIR/$TARGET_DIR_NAME.conf <<EOF
+sudo cat > $HELPERS/$TARGET_DIR_NAME.conf <<EOF
 #!/bin/bash
 start on runlevel [2345]
 stop on runlevel [!2345]
@@ -198,7 +199,8 @@ env JRE_HOME=/usr/lib/jvm/java-6-openjdk/jre
 env CLASSPATH=/home/geoserver/tomcat-cluster/apache-tomcat-7.0.42/bin/bootstrap.jar
 exec $CATALINA_HOME/bin/catalina.sh run >> var/log/$TARGET_DIR_NAME.log 2>&1
 EOF
-sudo chmod 755 $UPSTART_DIR/$TARGET_DIR_NAME.conf
+sudo chmod 755 $HELPERS/$TARGET_DIR_NAME.conf
+cp $HELPERS/$TARGET_DIR_NAME.conf /etc/init/
 service $TARGET_DIR_NAME start
 }
 
