@@ -1,15 +1,39 @@
-tomcat-geoserver
-================
+### AZGS custom clutered Geoserver deployment scheme and automation tool
+Documentation on how our Geoserver cluster works and a BASH tool for automated deployment of new Geoservers.
 
-Working out of ~/tomcat-cluster
+The Geoserver cluster lives on `Harzburgite` at `/home/geoserver/tomcat-cluster`.
 
-Version of tomcat installed on the server:
-wget --no-verbose http://archive.apache.org/dist/tomcat/tomcat-7/v7.0.42/bin/apache-tomcat-7.0.42.tar.gz 
+Tomcat binaries live in `~/tomcat-cluster/apache-tomcat-7.0.42` and we're currently running Apache-Tomcat v7.0.42 (http://archive.apache.org/dist/tomcat/tomcat-7/v7.0.42/bin/apache-tomcat-7.0.42.tar.gz)
 
-tar -zxf apache-tomcat-7.0.42.tar.gz 
+We run each instance of Geoserver in it's own thread of the Tomcat binaries just described.  The threads all
+live in `~/tomcat-cluster/cluster` and follow the naming convention: `tomcat-XXXX` where `XXXX` is the 
+`connector port` respective of the thread.  So `~/tomcat-cluster/cluster/tomcat-8081` is a Tomcat thread
+being served out of port 8081.
 
-structure:
+### Build a new thread
+Use `install.sh` to build a new thread and Geoserver instance.  If the installation script is not recognized as an executable file, make it one:
 
-~/tomcat-cluster
-~/tomcat-cluster/apache-tomcat-7.0.42
-~/tomcat-cluster/tomcat-{port}/{conf, logs, temps, webapps, work, tomcat-{port}.sh}
+    $ sudo chmod u+x install.sh
+
+The following variables should be changed before running `install.sh`:
+
+    # The port that this Tomcat thread will run on
+    CONNECTOR_PORT
+    # The port that this Tomcat thread will shutdown on.  Must be an open port.
+    SHUTDOWN_PORT
+    # An alpha-numeric name for the Geoserver instance.  Must start with a letter.
+    GEOSERVER_NAME
+
+After running the installation script, the new Geoserver should be running on:
+
+    http://localhost:{CONNECTOR_PORT}/{GEOSERVER_NAME}
+
+To run it under a reverse proxy with Nginx, a new location directive needs to be added into `/home/geoserver/config/nginx.config`:
+
+    location /my_location_directive/ {
+    	proxy_pass http://127.0.0.1:{CONNECTOR_PORT}/{GEOSERVER_NAME};
+    }
+
+And then reload Nginx:
+
+    $ sudo service nginx reload
