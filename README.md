@@ -37,3 +37,16 @@ To run it under a reverse proxy with Nginx, a new location directive needs to be
 And then reload Nginx:
 
     $ sudo service nginx reload
+
+### JSONP
+We're deploying custom Tomcat/Geoserver threads with JSONP enabled.  Some of our applications (like the AZ Hazard Viewer) have a JSONP dependency.  The configuration has already been made, so this isn't something to worry about when deploying fresh instances.  But just important to keep in mind for the next time we migrate our data.
+
+When deploying Geoserver with Tomcat, we enable JSONP like this:
+
+    # Edit tomcat/bin/setenv.sh, create if it doesn't exist
+    $ sudo nano ~/tomcat-cluster/apache-tomcat-7.0.42/bin/setenv.sh
+    
+    # Add the following text and save
+    $ export ENABLE_JSONP=true and outFormat=text/javascript
+
+And then restart the Tomcat server/thread(s)
