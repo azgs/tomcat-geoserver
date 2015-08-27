@@ -197,7 +197,7 @@ respawn
 env CATALINA_HOME=$CATALINA_HOME
 env CATALINA_BASE=$CATALINA_BASE
 env CATALINA_TMPDIR=$CATALINA_BASE/temp
-env JRE_HOME=/usr/lib/jvm/java-6-openjdk/jre
+env JRE_HOME=/usr/lib/jvm/java-6-openjdk-amd64/jre
 env CLASSPATH=/home/geoserver/tomcat-cluster/apache-tomcat-7.0.42/bin/bootstrap.jar
 exec $CATALINA_HOME/bin/catalina.sh run >> var/log/$TARGET_DIR_NAME.log 2>&1
 EOF
