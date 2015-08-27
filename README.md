@@ -1,4 +1,4 @@
-### AZGS custom clutered Geoserver deployment scheme and automation tool
+### AZGS custom clustered Geoserver deployment scheme and automation tool
 Documentation on how our Geoserver cluster works and a BASH tool for automated deployment of new Geoservers.
 
 The Geoserver cluster lives on `Harzburgite` at `/home/geoserver/tomcat-cluster`.
@@ -11,11 +11,7 @@ live in `~/tomcat-cluster/cluster` and follow the naming convention: `tomcat-XXX
 being served out of port 8081.
 
 ### Build a new thread
-Use `install.sh` to build a new thread and Geoserver instance.  If the installation script is not recognized as an executable file, make it one:
-
-    $ sudo chmod u+x install.sh
-
-The following variables should be changed before running `install.sh`:
+First change the following variables in `install.sh`:
 
     # The port that this Tomcat thread will run on
     CONNECTOR_PORT
@@ -23,6 +19,16 @@ The following variables should be changed before running `install.sh`:
     SHUTDOWN_PORT
     # An alpha-numeric name for the Geoserver instance.  Must start with a letter.
     GEOSERVER_NAME
+
+Run `install.sh`:
+
+    $ sudo bash install.sh
+
+If the installation script is not recognized as an executable file, make it one:
+
+    $ sudo chmod u+x install.sh
+
+An Upstart process is created in `/etc/init/tomcat-[CONNECTOR_PORT].conf` and started (`service tomcat-[CONNECTOR_PORT] start`) as part of the install. This Upstart process starts the Tomcat thread.
 
 After running the installation script, the new Geoserver should be running on:
 
